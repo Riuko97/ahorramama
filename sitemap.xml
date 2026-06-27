@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mapa del sitio de ChollosBebé. CAMBIA www.tudominio.com por tu dominio real.
+     Añade aquí una línea <url> por cada página nueva (categorías, artículos del blog, etc.). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.tudominio.com/</loc>
+    <lastmod>2026-06-27</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Ejemplos de futuras páginas (descoméntalas cuando existan):
+  <url><loc>https://www.tudominio.com/cochecitos</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.tudominio.com/sillas-de-coche</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.tudominio.com/blog/mejor-cochecito-2026</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  -->
+</urlset>

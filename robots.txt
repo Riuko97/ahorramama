@@ -1,0 +1,7 @@
+# robots.txt de ChollosBebé
+# Permite que Google y demás buscadores rastreen toda la web.
+User-agent: *
+Allow: /
+
+# Indica dónde está el mapa del sitio (CAMBIA por tu dominio real)
+Sitemap: https://www.tudominio.com/sitemap.xml

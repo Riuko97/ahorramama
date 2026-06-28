@@ -6,11 +6,12 @@ import { IconScale } from "./Icons";
 export default function ProductCard({ p }) {
   const { compareIds, toggleCompare } = useStore();
   const on = compareIds.includes(p.id);
+  const d = discount(p);
   return (
     <article className="card" data-cat={p.cat}>
       <div className="card__img" style={{ background: p.color }}>
         {p.icon}
-        <span className="badge badge--off">-{discount(p)}%</span>
+        {d > 0 ? <span className="badge badge--off">-{d}%</span> : null}
         {p.flash ? <span className="badge badge--flash">⚡ Flash</span> : null}
         <span className="badge badge--store">{p.store}</span>
       </div>
@@ -22,7 +23,7 @@ export default function ProductCard({ p }) {
         </div>
         <div className="card__prices">
           <span className="now">{eur(p.price)}</span>
-          <span className="was">{eur(p.was)}</span>
+          {d > 0 ? <span className="was">{eur(p.was)}</span> : null}
         </div>
         <div className="card__actions">
           <a className="btn btn--buy" href={affLink(p.url)} target="_blank" rel="nofollow sponsored noopener">Ver oferta →</a>

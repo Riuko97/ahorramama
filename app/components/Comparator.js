@@ -35,9 +35,9 @@ export default function Comparator() {
                   <tr><th>Marca</th>{items.map((p) => <td key={p.id}>{p.brand}</td>)}</tr>
                   <tr><th>Categoría</th>{items.map((p) => <td key={p.id}>{p.cat}</td>)}</tr>
                   <tr><th>Precio</th>{items.map((p) => (
-                    <td key={p.id}><span className={p.price === minP ? "best" : ""}>{eur(p.price)}</span><span className="pw">{eur(p.was)}</span></td>
+                    <td key={p.id}><span className={p.price === minP ? "best" : ""}>{eur(p.price)}</span>{p.was ? <span className="pw">{eur(p.was)}</span> : null}</td>
                   ))}</tr>
-                  <tr><th>Descuento</th>{items.map((p) => <td key={p.id} className={discount(p) === maxD ? "best" : ""}>-{discount(p)}%</td>)}</tr>
+                  <tr><th>Descuento</th>{items.map((p) => <td key={p.id} className={discount(p) === maxD && discount(p) > 0 ? "best" : ""}>{discount(p) > 0 ? "-" + discount(p) + "%" : "—"}</td>)}</tr>
                   <tr><th>Valoración</th>{items.map((p) => <td key={p.id} className={p.rating === maxR ? "best" : ""}>{stars(p.rating)} {p.rating}</td>)}</tr>
                   <tr><th>Opiniones</th>{items.map((p) => <td key={p.id}>{p.reviews.toLocaleString("es-ES")}</td>)}</tr>
                   <tr><th></th>{items.map((p) => (

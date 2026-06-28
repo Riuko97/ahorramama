@@ -8,10 +8,13 @@ export default function Shop() {
   const { category, setCategory, query } = useStore();
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
+    const norm = (str) => str.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    const q = norm(query.trim());
     return PRODUCTS.filter((p) => {
-      const okCat = category === "Todas" || p.cat === category;
-      const okText = !q || p.title.toLowerCase().includes(q);
+      const okCat =
+        category === "Todas" ? true : category === "flash" ? !!p.flash : p.cat === category;
+      const haystack = norm(p.title + " " + p.cat + " " + (p.brand || ""));
+      const okText = !q || q.split(/\s+/).every((w) => haystack.includes(w));
       return okCat && okText;
     });
   }, [category, query]);
@@ -23,13 +26,10 @@ export default function Shop() {
         <span className="sub">{filtered.length} ofertas</span>
       </div>
       <div className="filters">
-        {CATEGORIES.map((c) => (
-          <button
-            type="button"
-            key={c}
-            className={"chip" + (c === category ? " active" : "")}
-            onClick={() => setCategory(c)}
-          >{c}</button>
+        <button type="button" className={"chip" + (category === "Todas" ? " active" : "")} onClick={() => setCategory("Todas")}>Todas</button>
+        <button type="button" className={"chip chip--flash" + (category === "flash" ? " active" : "")} onClick={() => setCategory("flash")}>⚡ Flash</button>
+        {CATEGORIES.filter((c) => c !== "Todas").map((c) => (
+          <button type="button" key={c} className={"chip" + (c === category ? " active" : "")} onClick={() => setCategory(c)}>{c}</button>
         ))}
       </div>
       <div className="grid">

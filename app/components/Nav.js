@@ -1,10 +1,13 @@
 "use client";
 import { useRef, useState, useEffect, useCallback } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { CATEGORIES } from "../../lib/products";
 import { useStore } from "./StoreProvider";
 
 export default function Nav() {
   const { setCategory } = useStore();
+  const router = useRouter();
+  const pathname = usePathname();
   const scroller = useRef(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
@@ -35,9 +38,11 @@ export default function Nav() {
 
   const go = (cat) => {
     setCategory(cat);
-    if (typeof document !== "undefined") {
+    if (pathname === "/") {
       const el = document.getElementById("ofertas");
       if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      router.push("/#ofertas"); // desde otra página, volvemos a la home con el filtro puesto
     }
   };
 

@@ -1,5 +1,6 @@
 "use client";
 import { affLink, discount, stars, eur } from "../../lib/products";
+import Link from "next/link";
 import { useStore } from "./StoreProvider";
 import { IconScale } from "./Icons";
 
@@ -9,24 +10,34 @@ export default function ProductCard({ p }) {
   const d = discount(p);
   return (
     <article className="card" data-cat={p.cat}>
-      <div className="card__img" style={{ background: p.color }}>
-        {p.icon}
+      <Link href={`/producto/${p.id}`} className="card__imglink">
+      <div className="card__img" style={{ background: p.img ? "#fff" : p.color }}>
+        {p.img ? <img src={p.img} alt={p.title} className="card__photo" /> : p.icon}
         {d > 0 ? <span className="badge badge--off">-{d}%</span> : null}
         {p.flash ? <span className="badge badge--flash">⚡ Flash</span> : null}
         <span className="badge badge--store">{p.store}</span>
       </div>
+      </Link>
       <div className="card__body">
         <span className="card__cat">{p.cat}</span>
-        <h3 className="card__title">{p.title}</h3>
-        <div className="card__stars" aria-label={`${p.rating} de 5`}>
-          {stars(p.rating)} <small>({p.reviews.toLocaleString("es-ES")})</small>
-        </div>
+        <h3 className="card__title"><Link href={`/producto/${p.id}`}>{p.title}</Link></h3>
+        {p.rating ? (
+          <div className="card__stars" aria-label={`${p.rating} de 5`}>
+            {stars(p.rating)} <small>({(p.reviews || 0).toLocaleString("es-ES")})</small>
+          </div>
+        ) : null}
         <div className="card__prices">
-          <span className="now">{eur(p.price)}</span>
-          {d > 0 ? <span className="was">{eur(p.was)}</span> : null}
+          {p.price != null ? (
+            <>
+              <span className="now">{eur(p.price)}</span>
+              {d > 0 ? <span className="was">{eur(p.was)}</span> : null}
+            </>
+          ) : (
+            <span className="card__noprice">Ver precio en Amazon</span>
+          )}
         </div>
         <div className="card__actions">
-          <a className="btn btn--buy" href={affLink(p.url)} target="_blank" rel="nofollow sponsored noopener">Ver oferta →</a>
+          <a className="btn btn--buy" href={affLink(p.url)} target="_blank" rel="nofollow sponsored noopener">Ver oferta</a>
           <button
             type="button"
             className={"btn btn--cmp" + (on ? " on" : "")}

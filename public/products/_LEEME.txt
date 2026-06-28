@@ -1,0 +1,8 @@
+Carpeta de fotos de producto.
+- Sube aquí UNA imagen por producto (JPG, PNG o WebP).
+- Nombre sugerido (sin espacios ni acentos), por ejemplo:
+    maxicosi-zelia-trio.jpg
+    dodot-sensitive-t2.jpg
+    toallitas-by-amazon.jpg
+- Tamaño ideal: ~600-800 px, cuadrada o 4:3. No hace falta que pese mucho.
+Luego dime el nombre del archivo y lo conecto a su producto.

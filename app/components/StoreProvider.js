@@ -1,7 +1,9 @@
 "use client";
 import { createContext, useContext, useState, useCallback, useRef } from "react";
 
-const StoreContext = createContext(null);
+const noop = () => {};
+const defaultStore = { query: "", setQuery: noop, category: "Todas", setCategory: noop, compareIds: [], toggleCompare: noop, compareOpen: false, setCompareOpen: noop, toastMsg: "" };
+const StoreContext = createContext(defaultStore);
 export const useStore = () => useContext(StoreContext);
 
 export default function StoreProvider({ children }) {

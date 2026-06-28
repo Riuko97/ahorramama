@@ -32,7 +32,7 @@ export default function Comparator() {
             ) : (
               <table className="ctable">
                 <tbody>
-                  <tr><th></th>{items.map((p) => <td key={p.id} className="ph" style={{ background: p.color }}>{p.icon}</td>)}</tr>
+                  <tr><th></th>{items.map((p) => <td key={p.id} className="ph" style={{ background: p.img ? "#fff" : p.color }}>{p.img ? <img src={p.img} alt={p.title} /> : p.icon}</td>)}</tr>
                   <tr><th>Producto</th>{items.map((p) => <td key={p.id} className="pn">{p.title}</td>)}</tr>
                   <tr><th>Marca</th>{items.map((p) => <td key={p.id}>{p.brand}</td>)}</tr>
                   <tr><th>Categoría</th>{items.map((p) => <td key={p.id}>{p.cat}</td>)}</tr>

@@ -1,11 +1,10 @@
 "use client";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { CATEGORIES } from "../../lib/products";
 import { useStore } from "./StoreProvider";
 
 export default function Nav() {
-  const { setCategory } = useStore();
+  const { setCategory, categories } = useStore();
   const router = useRouter();
   const pathname = usePathname();
   const scroller = useRef(null);
@@ -58,7 +57,7 @@ export default function Nav() {
 
         <div className="nav-scroll" ref={scroller}>
           <button type="button" className="featured" onClick={() => go("Todas")}>🔥 Ofertas</button>
-          {CATEGORIES.filter((c) => c !== "Todas").map((c) => (
+          {categories.filter((c) => c !== "Todas").map((c) => (
             <button type="button" key={c} onClick={() => go(c)}>{c}</button>
           ))}
         </div>

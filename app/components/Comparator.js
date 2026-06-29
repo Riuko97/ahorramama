@@ -1,11 +1,11 @@
 "use client";
-import { PRODUCTS, affLink, discount, stars, eur } from "../../lib/products";
+import { affLink, discount, stars, eur } from "../../lib/products";
 import { useStore } from "./StoreProvider";
 import { IconScale } from "./Icons";
 
 export default function Comparator() {
-  const { compareIds, toggleCompare, compareOpen, setCompareOpen } = useStore();
-  const items = compareIds.map((id) => PRODUCTS.find((p) => p.id === id)).filter(Boolean);
+  const { compareItems, compareIds, toggleCompare, compareOpen, setCompareOpen } = useStore();
+  const items = compareItems;
 
   const prices = items.map((p) => p.price).filter((v) => v != null);
   const minP = prices.length ? Math.min(...prices) : 0;
@@ -45,7 +45,7 @@ export default function Comparator() {
                   <tr><th></th>{items.map((p) => (
                     <td key={p.id}>
                       <a className="cbuy" href={affLink(p.url)} target="_blank" rel="nofollow sponsored noopener">Comprar →</a>
-                      <br /><button type="button" className="rm" onClick={() => toggleCompare(p.id)}>Quitar</button>
+                      <br /><button type="button" className="rm" onClick={() => toggleCompare(p)}>Quitar</button>
                     </td>
                   ))}</tr>
                 </tbody>

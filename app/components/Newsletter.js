@@ -4,21 +4,31 @@ import { IconMail } from "./Icons";
 
 export default function Newsletter() {
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     if (form.website.value) return; // honeypot
     const email = form.email.value;
-    // En hosting estático no hay PHP: mostramos confirmación.
-    // Para guardar de verdad, conecta Mailchimp/Brevo/Formspree aquí.
-    fetch("https://formspree.io/f/tuFormID", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ email }),
-    }).then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(() => { setMsg("¡Listo! Te avisaremos de los próximos chollos 🎉"); form.reset(); })
-      .catch(() => { setMsg("¡Gracias! Te has suscrito correctamente 🎉"); form.reset(); });
+    setLoading(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setMsg("¡Listo! Te avisaremos de los próximos chollos 🎉");
+        form.reset();
+      } else {
+        setMsg("Ya estás suscrito o ha habido un error. Inténtalo de nuevo.");
+      }
+    } catch {
+      setMsg("Error de conexión. Inténtalo de nuevo.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,7 +39,7 @@ export default function Newsletter() {
         <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" defaultValue="" />
         <label className="sr-only" htmlFor="email">Tu email</label>
         <input id="email" name="email" type="email" placeholder="tu@email.com" required />
-        <button type="submit">Quiero los chollos</button>
+        <button type="submit" disabled={loading}>{loading ? "Enviando..." : "Quiero los chollos"}</button>
       </form>
       <div className="msg" role="status">{msg}</div>
     </section>

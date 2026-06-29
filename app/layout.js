@@ -1,11 +1,15 @@
 import "./globals.css";
-import { SITE_URL } from "../lib/products";
+import { SITE_URL, getCategories } from "../lib/products";
 import StoreProvider from "./components/StoreProvider";
 import TopBar from "./components/TopBar";
 import Header from "./components/Header";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import Comparator from "./components/Comparator";
+
+export const viewport = {
+  themeColor: "#ff7fb0",
+};
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,7 +30,6 @@ export const metadata = {
     ],
     apple: "/assets/apple-touch-icon.png",
   },
-  themeColor: "#ff7fb0",
   openGraph: {
     type: "website",
     siteName: "AhorraMamá",
@@ -59,19 +62,20 @@ const websiteSchema = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const categories = await getCategories();
   return (
     <html lang="es">
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       </head>
       <body>
-        <StoreProvider>
+        <StoreProvider categories={categories}>
           <TopBar />
           <Header />
           <Nav />
           <main>{children}</main>
-          <Footer />
+          <Footer categories={categories} />
           <Comparator />
         </StoreProvider>
       </body>

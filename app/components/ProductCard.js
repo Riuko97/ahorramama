@@ -43,7 +43,7 @@ export default function ProductCard({ p }) {
             className={"btn btn--cmp" + (on ? " on" : "")}
             aria-label="Añadir al comparador"
             title="Comparar"
-            onClick={() => toggleCompare(p.id)}
+            onClick={() => toggleCompare(p)}
           ><IconScale size={18} /></button>
         </div>
       </div>

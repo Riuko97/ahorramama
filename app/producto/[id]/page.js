@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { PRODUCTS, affLink, discount, stars, eur, productSchemaItem } from "../../../lib/products";
+import { getProducts, getProduct, affLink, discount, stars, eur, productSchemaItem } from "../../../lib/products";
 import CompareButton from "../../components/CompareButton";
 import Gallery from "../../components/Gallery";
 
-export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ id: String(p.id) }));
-}
+export const dynamic = "force-dynamic";
 
-export function generateMetadata({ params }) {
-  const p = PRODUCTS.find((x) => String(x.id) === params.id);
+export async function generateMetadata({ params }) {
+  const p = await getProduct(params.id);
   if (!p) return {};
   return {
     title: p.title,
@@ -18,8 +16,8 @@ export function generateMetadata({ params }) {
   };
 }
 
-export default function ProductPage({ params }) {
-  const p = PRODUCTS.find((x) => String(x.id) === params.id);
+export default async function ProductPage({ params }) {
+  const p = await getProduct(params.id);
   if (!p) notFound();
   const d = discount(p);
   const opinions = p.opinions || [];
@@ -56,7 +54,7 @@ export default function ProductPage({ params }) {
           <div className="pd-store">Disponible en <strong>{p.store}</strong></div>
           <div className="pd-actions">
             <a className="pd-cta" href={affLink(p.url)} target="_blank" rel="nofollow sponsored noopener">Ir a la oferta</a>
-            <CompareButton id={p.id} />
+            <CompareButton product={p} />
           </div>
           <ul className="pd-trust">
             <li>Compra en la tienda oficial</li>

@@ -1,7 +1,7 @@
-import { DEAL_OF_DAY, affLink, discount, eur } from "../../lib/products";
+import { affLink, discount, eur } from "../../lib/products";
 
-export default function DealOfDay() {
-  const p = DEAL_OF_DAY;
+export default function DealOfDay({ product }) {
+  const p = product;
   if (!p) return null;
   return (
     <section className="dod" aria-label="Oferta del día">

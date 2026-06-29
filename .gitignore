@@ -4,3 +4,10 @@
 npm-debug.log*
 .DS_Store
 .env*
+
+# Base de datos local de desarrollo (SQLite)
+*.db
+*.db-journal
+
+# Logs/archivos temporales de build
+scratch_*

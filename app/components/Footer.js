@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { CATEGORIES } from "../../lib/products";
 
-export default function Footer() {
-  const cats = CATEGORIES.filter((c) => c !== "Todas").slice(0, 6);
+export default function Footer({ categories = [] }) {
+  const cats = categories.filter((c) => c !== "Todas").slice(0, 6);
   return (
     <footer className="footer">
       <div className="wrap">

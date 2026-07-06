@@ -30,6 +30,7 @@ export default function Comparator() {
             {items.length === 0 ? (
               <div className="empty">Aún no has añadido productos.<br />Pulsa el botón <IconScale size={16} className="inline-ic" /> de cualquier oferta para compararla.</div>
             ) : (
+              <div className="ctable-wrap">
               <table className="ctable">
                 <tbody>
                   <tr><th></th>{items.map((p) => <td key={p.id} className="ph" style={{ background: p.img ? "#fff" : p.color }}>{p.img ? <img src={p.img} alt={p.title} /> : p.icon}</td>)}</tr>
@@ -50,6 +51,7 @@ export default function Comparator() {
                   ))}</tr>
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>

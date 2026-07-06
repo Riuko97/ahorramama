@@ -25,7 +25,7 @@ export default function Gallery({ images = [], alt, icon, color }) {
               onClick={() => setI(idx)}
               aria-label={`Imagen ${idx + 1}`}
             >
-              <img src={src} alt="" />
+              <img src={src} alt={`${alt} — miniatura ${idx + 1}`} loading="lazy" />
             </button>
           ))}
         </div>

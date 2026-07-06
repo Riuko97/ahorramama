@@ -65,7 +65,8 @@ async function main() {
 
   // Admin user
   const adminEmail = process.env.ADMIN_EMAIL || "admin@ahorramama.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "chollos2024";
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) throw new Error("Falta ADMIN_PASSWORD en .env — no se crea admin con contraseña por defecto");
   const hash = await bcrypt.hash(adminPassword, 12);
   await prisma.adminUser.upsert({
     where: { email: adminEmail },

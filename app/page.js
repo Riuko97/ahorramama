@@ -36,6 +36,21 @@ export default async function Home() {
         <nav className="crumbs" aria-label="Ruta"><Link href="/">Inicio</Link><span>›</span>Chollos de bebé</nav>
         <DealOfDay product={dealOfDay} />
         <Shop products={products} categories={categories} />
+        <section className="seo-intro" aria-label="Sobre AhorraMamá">
+          <h2>Chollos de bebé seleccionados a mano, cada día</h2>
+          <p>
+            En AhorraMamá rastreamos a diario las ofertas de Amazon y de las principales tiendas
+            españolas de puericultura para traerte solo los chollos que merecen la pena: cochecitos,
+            sillas de coche i-Size, vigilabebés, tronas, sacaleches, pañales y mucho más. Solo
+            publicamos productos con valoraciones reales de 4 estrellas o más, con su precio actual
+            y el descuento verificado en el momento de publicarlo.
+          </p>
+          <p>
+            Usa el comparador para ver hasta 4 productos lado a lado antes de decidir, filtra por
+            categoría o busca directamente lo que necesitas. Si quieres recibir los mejores chollos
+            antes que nadie, apúntate gratis a la newsletter.
+          </p>
+        </section>
         <Newsletter />
       </div>
     </>

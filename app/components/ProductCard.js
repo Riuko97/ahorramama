@@ -12,7 +12,7 @@ export default function ProductCard({ p }) {
     <article className="card" data-cat={p.cat}>
       <Link href={`/producto/${p.id}`} className="card__imglink">
       <div className="card__img" style={{ background: p.img ? "#fff" : p.color }}>
-        {p.img ? <img src={p.img} alt={p.title} className="card__photo" /> : p.icon}
+        {p.img ? <img src={p.img} alt={p.title} className="card__photo" loading="lazy" decoding="async" /> : p.icon}
         {d > 0 ? <span className="badge badge--off">-{d}%</span> : null}
         {p.flash ? <span className="badge badge--flash">⚡ Flash</span> : null}
         <span className="badge badge--store">{p.store}</span>

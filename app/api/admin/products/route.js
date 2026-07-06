@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
-import { serializeProduct } from "../../../../lib/products";
+import { serializeProduct, deserializeProduct } from "../../../../lib/products";
 import { validateProduct } from "../../../../lib/validation";
 
 export async function GET(request) {
@@ -13,7 +13,7 @@ export async function GET(request) {
   if (q) where.title = { contains: q };
 
   const products = await prisma.product.findMany({ where, orderBy: { id: "asc" } });
-  return NextResponse.json(products);
+  return NextResponse.json(products.map(deserializeProduct));
 }
 
 export async function POST(request) {

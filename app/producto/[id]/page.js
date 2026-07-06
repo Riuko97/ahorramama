@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProducts, getProduct, affLink, discount, stars, eur, productSchemaItem } from "../../../lib/products";
+import { getProducts, getProduct, affLink, discount, stars, eur, productSchemaItem, SITE_URL } from "../../../lib/products";
 import CompareButton from "../../components/CompareButton";
 import Gallery from "../../components/Gallery";
 
@@ -9,10 +9,20 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }) {
   const p = await getProduct(params.id);
   if (!p) return {};
+  const description = p.description || `Oferta en ${p.title} al mejor precio.`;
+  const url = `${SITE_URL}/producto/${p.id}/`;
   return {
     title: p.title,
-    description: p.description || `Oferta en ${p.title} al mejor precio.`,
-    alternates: { canonical: `/producto/${p.id}/` },
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: p.title,
+      description,
+      url,
+      type: "website",
+      images: p.img ? [{ url: p.img }] : undefined,
+    },
+    twitter: { card: "summary_large_image", title: p.title, description },
   };
 }
 

@@ -24,6 +24,7 @@ export default function Header() {
           <button type="submit" aria-label="Buscar"><IconSearch size={18} /></button>
         </form>
         <div className="tools">
+          <Link href="/blog/">Guías</Link>
           <Link href="/#news"><IconBell className="ic" />Avisos</Link>
           <button type="button" onClick={() => setCompareOpen(true)}><IconScale className="ic" />Comparar</button>
         </div>

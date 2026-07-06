@@ -47,8 +47,10 @@ export default async function Home() {
           </p>
           <p>
             Usa el comparador para ver hasta 4 productos lado a lado antes de decidir, filtra por
-            categoría o busca directamente lo que necesitas. Si quieres recibir los mejores chollos
-            antes que nadie, apúntate gratis a la newsletter.
+            categoría o busca directamente lo que necesitas. Y si estás empezando, en nuestras{" "}
+            <Link href="/blog/">guías de compra</Link> te contamos qué silla de coche, cochecito o
+            vigilabebés elegir según tu caso. Para recibir los mejores chollos antes que nadie,
+            apúntate gratis a la newsletter.
           </p>
         </section>
         <Newsletter />

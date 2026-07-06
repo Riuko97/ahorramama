@@ -1,5 +1,5 @@
 "use client";
-import { affLink, discount, stars, eur } from "../../lib/products";
+import { affLink, discount, stars, eur, productPath } from "../../lib/products";
 import Link from "next/link";
 import { useStore } from "./StoreProvider";
 import { IconScale } from "./Icons";
@@ -10,7 +10,7 @@ export default function ProductCard({ p }) {
   const d = discount(p);
   return (
     <article className="card" data-cat={p.cat}>
-      <Link href={`/producto/${p.id}`} className="card__imglink">
+      <Link href={productPath(p)} className="card__imglink">
       <div className="card__img" style={{ background: p.img ? "#fff" : p.color }}>
         {p.img ? <img src={p.img} alt={p.title} className="card__photo" loading="lazy" decoding="async" /> : p.icon}
         {d > 0 ? <span className="badge badge--off">-{d}%</span> : null}
@@ -20,7 +20,7 @@ export default function ProductCard({ p }) {
       </Link>
       <div className="card__body">
         <span className="card__cat">{p.cat}</span>
-        <h3 className="card__title"><Link href={`/producto/${p.id}`}>{p.title}</Link></h3>
+        <h3 className="card__title"><Link href={productPath(p)}>{p.title}</Link></h3>
         {p.rating ? (
           <div className="card__stars" aria-label={`${p.rating} de 5`}>
             {stars(p.rating)} <small>({(p.reviews || 0).toLocaleString("es-ES")})</small>

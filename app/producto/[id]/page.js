@@ -1,16 +1,16 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { getProducts, getProduct, affLink, discount, stars, eur, productSchemaItem, SITE_URL } from "../../../lib/products";
+import { getProducts, getProduct, affLink, discount, stars, eur, productSchemaItem, SITE_URL, productPath } from "../../../lib/products";
 import CompareButton from "../../components/CompareButton";
 import Gallery from "../../components/Gallery";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
-  const p = await getProduct(params.id);
+  const p = await getProduct(parseInt(params.id, 10));
   if (!p) return {};
   const description = p.description || `Oferta en ${p.title} al mejor precio.`;
-  const url = `${SITE_URL}/producto/${p.id}/`;
+  const url = `${SITE_URL}${productPath(p)}`;
   return {
     title: p.title,
     description,
@@ -27,8 +27,15 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const p = await getProduct(params.id);
+  const id = parseInt(params.id, 10);
+  if (Number.isNaN(id)) notFound();
+  const p = await getProduct(id);
   if (!p) notFound();
+  // URL canónica con slug: /producto/17 o /producto/17-slug-viejo redirigen a la actual
+  const canonical = productPath(p);
+  if (`/producto/${params.id}/` !== canonical && `/producto/${params.id}` !== canonical.slice(0, -1)) {
+    redirect(canonical);
+  }
   const d = discount(p);
   const opinions = p.opinions || [];
 

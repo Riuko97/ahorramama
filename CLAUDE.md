@@ -1,5 +1,18 @@
 guarda todos los errores que encuentres para no repetirlos en @CLAUDE.md
 
+## Agentes del proyecto y reglas de enrutado (.claude/agents/)
+El proyecto tiene 6 agentes especializados. Reglas para decidir cuándo delegar:
+
+- **NO delegues** tareas simples y concretas (cambiar un texto, un color, añadir un producto a la BD, responder una duda): hazlas directamente.
+- **backend** → API routes, Prisma/SQLite, auth JWT, lógica de afiliados (`affLink`), seeds, schema.
+- **frontend** → componentes React, páginas, CSS, comparador, diseño responsive.
+- **seo** → metadatos, JSON-LD, sitemap, contenido SEO, keywords del nicho bebé.
+- **revisor-errores** → SIEMPRE después de cualquier cambio de código no trivial, y para diagnosticar fallos. Solo lee y reporta.
+- **jurado-tecnico** → ANTES de decisiones arriesgadas: migraciones, nuevas dependencias, refactors grandes, cambios de arquitectura o de estrategia de afiliación. 5 expertos críticos + veredicto.
+- **integrador** → tareas grandes que tocan 2+ áreas. Descompone, delega en los demás, unifica y cierra con revisor-errores.
+
+Flujo típico de una tarea grande: jurado-tecnico (si es arriesgada) → integrador → [backend / frontend / seo] → revisor-errores → resumen con pasos manuales de Windows si los hay.
+
 ## Arquitectura de autenticación (decidida)
 El proyecto usa auth propia de **admin con email + contraseña**: JWT con `jose` (cookie httpOnly `admin_token`, 8h) + `bcryptjs` + Prisma (modelo `AdminUser`). NO se usa NextAuth ni Google OAuth. Protección de rutas `/admin/*` en `middleware.js`. Datos (productos, newsletter) en Prisma/SQLite.
 
@@ -18,6 +31,25 @@ El proyecto usa auth propia de **admin con email + contraseña**: JWT con `jose`
   - Client Components → reciben datos por props o desde `StoreProvider` (que ahora expone `categories` y `compareItems`).
 - **Comparador sin listado global:** `StoreProvider` guarda objetos completos en `compareItems` (no ids). `toggleCompare(product)` recibe el objeto; `compareIds` se deriva. `CompareButton` recibe `product={p}` (no `id`). `Comparator` lee `compareItems`.
 - **`JWT_SECRET` placeholder hace fallar el BUILD, no solo producción:** el guard de `lib/auth.js` lanza `throw` cuando `NODE_ENV==="production"` (caso de `next build`) y el secreto es el por defecto → falla "Collecting page data" en rutas que importan `lib/auth`. Poner secreto real en `.env`.
+
+## Errores encontrados (2026-07-06) — sandbox Linux de Cowork
+- **Prisma Client generado solo para Windows no funciona en el sandbox Linux** ("could not locate the Query Engine for runtime debian-openssl-3.0.x"). Se añadió `binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]` a `schema.prisma`, PERO la descarga del engine Linux falla en el sandbox (`binaries.prisma.sh` → 403 Forbidden, red restringida). **Workaround que sí funciona:** leer/escribir la BD directamente con `python3` + `sqlite3` sobre `prisma/prisma/dev.db` (tabla `Product`). El usuario debe ejecutar `npx prisma generate` en Windows tras cambiar el schema.
+- **`affLink()` añadía `?tag=` de Amazon a CUALQUIER URL** (incluidas las de Awin `awin1.com`, lo que rompería su tracking). Corregido: solo añade el tag si el dominio es de Amazon.
+- Los enlaces cortos `amzn.to` no se pueden resolver (redirect) desde el sandbox: Amazon devuelve vacío fuera de un navegador real.
+
+## Afiliados (estado 2026-07-06, actualizado)
+- Amazon Afiliados: ACTIVO. Tag real: **`ahorramama-21`** (ya puesto en `AFFILIATE_TAG` de `lib/products.js`). Los productos antiguos usan enlaces cortos `amzn.to` (tag embebido); los nuevos usan `https://www.amazon.es/dp/ASIN` SIN tag — `affLink()` lo añade al renderizar. NO guardar el tag en la BD.
+- Awin: cuenta de editor **ahorramama, ID 2960799** (= `awinaffid` para deep-links). 6 programas solicitados pendientes de aprobación (2026-07-06): El Corte Inglés ES, AliExpress ES, Aosom ES, Carrefour Supermercado Online, Babymarkt ES, Vertbaudet ES. OJO Carrefour: SOLO comisiona categorías food/supermercado.
+- En Awin España NO están: Kiabi, Chicco, Tutete, Pisamonas, Prenatal, Bebitus.
+- Campo `store` del modelo Product indica la tienda ("Amazon", "El Corte Inglés", etc.). Para productos Awin usar la URL de deep-link de Awin (`awin1.com/cread.php?...`) tal cual, sin modificar.
+- 2026-07-06: subidos 14 chollos reales de Amazon (ids 27-40) + 30 más (ids 41-70) con precio/valoración/imagen reales (imágenes hotlink `m.media-amazon.com`, funcionan porque los componentes usan `<img>` normal y `images.unoptimized` en next.config). Categorías nuevas: Sillas de coche, Habitación, Juego, Baño, Viaje, Chupetes.
+- Criterio de calidad: no subir productos con valoración < 4,0★ (descartados: calienta biberones 3,7★, sacaleches NUK manual 3,9★, calzones Aolso 3,8★, vaso NUK Mini-Me 3,8★).
+
+## Errores encontrados (2026-07-06, tarde) — sandbox
+- **`sqlite3` da "disk I/O error" al ESCRIBIR en la BD a través del mount** (`/sessions/.../mnt/...`). Workaround: copiar `dev.db` a `/tmp`, escribir allí y copiar de vuelta (verificar con `md5sum`). La lectura simple a veces también falla ("unable to open database file").
+- **La caché del mount del shell puede quedarse DESFASADA tras editar con las herramientas de archivos** (el shell ve archivos truncados). Antes de COMMITEAR, verificar con `wc -l`/`tail` que el mount ve el archivo completo; si no, reescribirlo entero vía shell (heredoc).
+- **`public/products/postgresql-18.4-2-windows-x64.exe` (359 MB)**: instalador que NO debe subirse a git (GitHub rechaza >100 MB). Añadido a .gitignore.
+- **La BD `*.db` está en .gitignore** pero Vercel la necesita para mostrar productos → se añadió excepción `!prisma/prisma/dev.db` (se versiona). En Vercel el filesystem es de solo lectura: la web LEE productos bien, pero newsletter/panel admin NO podrán escribir en producción hasta migrar a Postgres.
 
 ## Build en Windows (entorno local)
 - `prisma generate` → **EPERM** renombrando `query_engine-windows.dll.node` si hay un `next dev` corriendo (bloquea la DLL). Detener el dev server antes de generar/buildear.

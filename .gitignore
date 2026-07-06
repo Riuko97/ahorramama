@@ -6,8 +6,13 @@ npm-debug.log*
 .env*
 
 # Base de datos local de desarrollo (SQLite)
+# EXCEPCIÓN: dev.db se versiona porque Vercel la necesita para mostrar los productos (solo lectura en prod)
 *.db
 *.db-journal
+!prisma/prisma/dev.db
+
+# Instaladores y binarios grandes (GitHub rechaza >100 MB)
+*.exe
 
 # Logs/archivos temporales de build
 scratch_*

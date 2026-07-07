@@ -15,11 +15,3 @@ npm-debug.log*
 
 # Logs/archivos temporales de build
 scratch_*
-# Logs de Claude
-.claude/logs/*.log
-.claude\agents\backend.md
-.claude\agents\frontend.md
-.claude\agents\integrador.md
-.claude\agents\seo.md
-.claude\agents\jurado-tecnico.md
-.claude\agents\revisor-errores.md

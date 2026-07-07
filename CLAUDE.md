@@ -1,17 +1,16 @@
 guarda todos los errores que encuentres para no repetirlos en @CLAUDE.md
 
 ## Agentes del proyecto y reglas de enrutado (.claude/agents/)
-El proyecto tiene 6 agentes especializados. Reglas para decidir cuándo delegar:
+El proyecto tiene 5 agentes especializados. Reglas para decidir cuándo delegar:
 
 - **NO delegues** tareas simples y concretas (cambiar un texto, un color, añadir un producto a la BD, responder una duda): hazlas directamente.
 - **backend** → API routes, Prisma/SQLite, auth JWT, lógica de afiliados (`affLink`), seeds, schema.
 - **frontend** → componentes React, páginas, CSS, comparador, diseño responsive.
 - **seo** → metadatos, JSON-LD, sitemap, contenido SEO, keywords del nicho bebé.
 - **revisor-errores** → SIEMPRE después de cualquier cambio de código no trivial, y para diagnosticar fallos. Solo lee y reporta.
-- **jurado-tecnico** → ANTES de decisiones arriesgadas: migraciones, nuevas dependencias, refactors grandes, cambios de arquitectura o de estrategia de afiliación. 5 expertos críticos + veredicto.
 - **integrador** → tareas grandes que tocan 2+ áreas. Descompone, delega en los demás, unifica y cierra con revisor-errores.
 
-Flujo típico de una tarea grande: jurado-tecnico (si es arriesgada) → integrador → [backend / frontend / seo] → revisor-errores → resumen con pasos manuales de Windows si los hay.
+Flujo típico de una tarea grande: integrador → [backend / frontend / seo] → revisor-errores → resumen con pasos manuales de Windows si los hay.
 
 ## Arquitectura de autenticación (decidida)
 El proyecto usa auth propia de **admin con email + contraseña**: JWT con `jose` (cookie httpOnly `admin_token`, 8h) + `bcryptjs` + Prisma (modelo `AdminUser`). NO se usa NextAuth ni Google OAuth. Protección de rutas `/admin/*` en `middleware.js`. Datos (productos, newsletter) en Prisma/SQLite.
@@ -23,7 +22,7 @@ El proyecto usa auth propia de **admin con email + contraseña**: JWT con `jose`
 - **`.env.local` quedó obsoleto** con variables de NextAuth (`NEXTAUTH_*`, `GOOGLE_*`); contradice `.env`. El sistema real usa `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`. `.env.local` tiene prioridad sobre `.env` en Next.js → puede confundir.
 - **`JWT_SECRET` por defecto es un placeholder** en `.env`/`lib/auth.js` ("cambia-esta-clave..."). Cambiar antes de producción.
 - **DB de dev anidada** en `prisma/prisma/dev.db` (por `DATABASE_URL="file:./prisma/dev.db"` resuelto desde la carpeta prisma). Funciona pero es confuso.
-- Nota: SQLite no sirve en Vercel (filesystem efímero). Para producción migrar a Postgres (Vercel Postgres/Neon/Supabase).
+- Nota: MIGRADO a Postgres (Neon) el 2026-07-07 — ver sección "Base de datos (Neon)" abajo.
 
 ## Capa de datos: PRODUCTS/CATEGORIES ya NO son estáticos
 - `lib/products.js` **ya no exporta `PRODUCTS` ni `CATEGORIES`**. Son funciones async: `getProducts()`, `getProduct(id)`, `getCategories()`, `getDealOfDay()` (leen de Prisma). Importar `PRODUCTS`/`CATEGORIES` directamente rompe el build ("not exported").
@@ -54,3 +53,13 @@ El proyecto usa auth propia de **admin con email + contraseña**: JWT con `jose`
 ## Build en Windows (entorno local)
 - `prisma generate` → **EPERM** renombrando `query_engine-windows.dll.node` si hay un `next dev` corriendo (bloquea la DLL). Detener el dev server antes de generar/buildear.
 - `next build` → **ENOENT renombrando `.next/export/500.html`** si `.next` quedó sucio/bloqueado. Solución: `Remove-Item -Recurse -Force .next` y reconstruir sin dev server activo.
+
+## Base de datos (Neon Postgres) — desde 2026-07-07
+- Producción y desarrollo usan **Neon Postgres** (recurso `ahorramama-db`, región fra1, plan Free), conectado al proyecto de Vercel (inyecta `DATABASE_URL` automáticamente). `.env` local apunta a la misma BD.
+- `schema.prisma` con `provider = "postgresql"`. 69 productos + newsletter + admin importados. `dev.db` (SQLite) quedó como copia local SIN versionar.
+- Newsletter y panel admin ya pueden ESCRIBIR en producción.
+- Para consultas rápidas sin Prisma: endpoint HTTP de Neon `POST https://<host>/sql` con cabecera `Neon-Connection-String` (funciona desde el navegador; el sandbox NO llega por red).
+
+## Errores del entorno (2026-07-07)
+- **El mount del sandbox NO permite BORRAR archivos** (`rm` → Operation not permitted), solo crear/sobrescribir. Consecuencia: cada operación git de escritura deja su `*.lock` huérfano (`index.lock`, `HEAD.lock`) que bloquea la siguiente. Solución: borrar los .lock desde el Explorador de Windows, y commitear con plumbing sin locks: `GIT_INDEX_FILE=/tmp/gidx git add/write-tree` + `git commit-tree` + escribir el hash directamente en `.git/refs/heads/main`.
+- La tarea programada diaria de precios corre a las 9:00 y también puede dejar locks (ejecución 2026-07-07: OK, commit f6fa3e8, 9 cambios).

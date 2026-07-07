@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { slugify } from "../../lib/products";
 
 export default function Footer({ categories = [] }) {
-  const cats = categories.filter((c) => c !== "Todas").slice(0, 6);
+  const cats = categories.filter((c) => c !== "Todas").slice(0, 8);
   return (
     <footer className="footer">
       <div className="wrap">
@@ -12,7 +13,7 @@ export default function Footer({ categories = [] }) {
           </div>
           <div>
             <h4>Categorías</h4>
-            {cats.map((c) => <Link key={c} href="/#ofertas">{c}</Link>)}
+            {cats.map((c) => <Link key={c} href={`/ofertas/${slugify(c)}/`}>{c}</Link>)}
           </div>
           <div>
             <h4>AhorraMamá</h4>

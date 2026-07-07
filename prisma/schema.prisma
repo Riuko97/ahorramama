@@ -1,11 +1,13 @@
+// Schema para PostgreSQL — sustituye a prisma/schema.prisma cuando migres.
+// Único cambio respecto al actual: provider "postgresql" (los modelos son idénticos).
+
 generator client {
   provider      = "prisma-client-js"
-  // "windows" para el PC del usuario y "debian-openssl-3.0.x" para el sandbox Linux
   binaryTargets = ["native", "windows", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

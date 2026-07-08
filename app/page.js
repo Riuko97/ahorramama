@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getProducts, getCategories, getDealOfDay, productSchemaItem } from "../lib/products";
+import { getProducts, getCategories, getDealOfDay, productSchemaItem, discount, eur, productPath } from "../lib/products";
 import HeroCarousel from "./components/HeroCarousel";
 import Marquee from "./components/Marquee";
 import Trust from "./components/Trust";
@@ -26,10 +26,23 @@ export default async function Home() {
     })),
   };
 
+  // 6 chollos con foto y descuento para las tarjetas del hero (2 por slide).
+  const featured = products
+    .filter((p) => p.img && discount(p) > 0)
+    .sort((a, b) => discount(b) - discount(a))
+    .slice(0, 6)
+    .map((p) => ({
+      img: p.img,
+      price: eur(p.price),
+      off: `-${discount(p)}%`,
+      href: productPath(p),
+      title: p.title,
+    }));
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
-      <HeroCarousel />
+      <HeroCarousel featured={featured} />
       <Marquee />
       <Trust />
       <div className="wrap">
